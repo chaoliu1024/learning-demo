@@ -62,10 +62,10 @@ public class Index {
 
 		Random random = new Random();
 		doc.addField("id", UUID.randomUUID());
-		// doc.addField("popularity", Math.abs(random.nextInt()) % 100 + 8000);
-		doc.addField("collectTime", new java.util.Date());
+		doc.addField("popularity", Math.abs(random.nextInt()) % 100 + 8000);
+		doc.addField("last_modified", new java.util.Date());
 		// doc.addField("keywords", "2solr4.10");
-		doc.addField("equIP", "10." + i % 23 + ".47." + i % 100);
+		doc.addField("name", "10." + i % 23 + ".47." + i % 100);
 		// doc.addField("_route_", "shard1");
 		docs.add(doc);
 	}
@@ -119,8 +119,8 @@ public class Index {
 	public static void main(String[] args) {
 
 		Index index = new Index();
-		// index.query("*", "*");
+		index.query("*", "*");
 		// index.deleteAll();
-		// index.addDocs(100000, 10000);
+		// index.addDocs(10000, 10000);
 	}
 }
