@@ -10,7 +10,6 @@ import java.util.Map.Entry;
 
 import me.chaoliu.learning.solr.solrserver.HttpSolrServerFactory;
 
-import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.SortClause;
 import org.apache.solr.client.solrj.SolrServer;
@@ -19,6 +18,8 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.CursorMarkParams;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Solr Cursor Mark Demo
@@ -30,7 +31,7 @@ public class CursorMark {
 
 	private SolrServer solrServer = HttpSolrServerFactory
 			.getInstanceSolrServer();
-	private static final Logger logger = Logger.getLogger(CursorMark.class);
+	private static Logger log = LoggerFactory.getLogger(CursorMark.class);
 
 	public void cursorMark() throws SolrServerException, IOException {
 		SolrQuery q = (new SolrQuery("*:*")).setRows(10).setSort(
@@ -59,7 +60,7 @@ public class CursorMark {
 			Iterator<Entry<String, Object>> iterator = solrDocument.iterator();
 			while (iterator.hasNext()) {
 				Entry<String, Object> next = iterator.next();
-				logger.debug(next.getKey() + ":" + next.getValue() + "\t");
+				log.info(next.getKey() + ":" + next.getValue() + "\t");
 			}
 		}
 	}
@@ -70,6 +71,6 @@ public class CursorMark {
 		long start = System.currentTimeMillis();
 		cmd.cursorMark();
 		long end = System.currentTimeMillis();
-		logger.debug("runing time: " + (end - start) / 1000 + "s");
+		log.info("runing time: " + (end - start) / 1000 + "s");
 	}
 }

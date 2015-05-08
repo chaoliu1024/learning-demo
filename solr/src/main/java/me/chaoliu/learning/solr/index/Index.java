@@ -14,7 +14,6 @@ import java.util.UUID;
 
 import me.chaoliu.learning.solr.solrserver.HttpSolrServerFactory;
 
-import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -22,6 +21,8 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * operations of solr index
@@ -34,7 +35,8 @@ public class Index {
 	private Collection<SolrInputDocument> docs = new ArrayList<SolrInputDocument>();
 	private SolrServer solrServer = HttpSolrServerFactory
 			.getInstanceSolrServer();
-	private static final Logger logger = Logger.getLogger(Index.class);
+
+	private static Logger log = LoggerFactory.getLogger(Index.class);
 
 	public void addDocs(int totalDocNum, int batchNum) {
 		long startTime = System.currentTimeMillis();
@@ -45,12 +47,12 @@ public class Index {
 				long start = System.currentTimeMillis();
 				commit();
 				long end = System.currentTimeMillis();
-				logger.info(i + ": " + (end - start) + "ms\t" + new Date());
+				log.info(i + ": " + (end - start) + "ms\t" + new Date());
 			}
 		}
 		commit();
 		long endTime = System.currentTimeMillis();
-		logger.info("rate is " + totalDocNum / ((endTime - startTime) / 1000)
+		log.info("rate is " + totalDocNum / ((endTime - startTime) / 1000)
 				+ " doc/s");
 	}
 
@@ -96,7 +98,7 @@ public class Index {
 				Iterator<String> iterator = doc.keySet().iterator();
 				while (iterator.hasNext()) {
 					String key = iterator.next();
-					logger.info(key + ":" + doc.getFieldValue(key));
+					log.info(key + ":" + doc.getFieldValue(key));
 				}
 			}
 		} catch (SolrServerException e) {
