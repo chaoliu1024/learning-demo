@@ -2,7 +2,7 @@
  * Copyright (c) 2015, Person Chao Liu. All rights reserved.
  */
 
-package me.chaoliu.learning.solr4.X.solrserver;
+package me.chaoliu.learning.solr4_X.solrserver;
 
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;

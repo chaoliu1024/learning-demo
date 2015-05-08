@@ -2,7 +2,7 @@
  * Copyright (c) 2015, Person Chao Liu. All rights reserved.
  */
 
-package me.chaoliu.learning.solr4.X.index;
+package me.chaoliu.learning.solr4_X.index;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.UUID;
 
-import me.chaoliu.learning.solr4.X.solrserver.HttpSolrServerFactory;
+import me.chaoliu.learning.solr4_X.solrserver.HttpSolrServerFactory;
 
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
