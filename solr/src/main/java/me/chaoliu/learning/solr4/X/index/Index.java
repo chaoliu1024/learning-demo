@@ -2,7 +2,7 @@
  * Copyright (c) 2015, Person Chao Liu. All rights reserved.
  */
 
-package me.chaoliu.learning.solr.index;
+package me.chaoliu.learning.solr4.X.index;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.UUID;
 
-import me.chaoliu.learning.solr.solrserver.HttpSolrServerFactory;
+import me.chaoliu.learning.solr4.X.solrserver.HttpSolrServerFactory;
 
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
@@ -62,10 +62,10 @@ public class Index {
 
 		Random random = new Random();
 		doc.addField("id", UUID.randomUUID());
-		doc.addField("popularity", Math.abs(random.nextInt()) % 100 + 8000);
-		doc.addField("last_modified", new java.util.Date());
-		doc.addField("keywords", "2solr4.10");
-		doc.addField("url", "127.0.0.5");
+		// doc.addField("popularity", Math.abs(random.nextInt()) % 100 + 8000);
+		doc.addField("collectTime", new java.util.Date());
+		// doc.addField("keywords", "2solr4.10");
+		doc.addField("equIP", "10." + i % 23 + ".47." + i % 100);
 		// doc.addField("_route_", "shard1");
 		docs.add(doc);
 	}
@@ -107,10 +107,19 @@ public class Index {
 		return list;
 	}
 
+	public void deleteAll() {
+		try {
+			solrServer.deleteByQuery("*:*");
+			solrServer.commit();
+		} catch (SolrServerException | IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public static void main(String[] args) {
 
 		Index index = new Index();
-		index.query("*", "*");
+		// index.query("*", "*");
 		// index.deleteAll();
 		// index.addDocs(100000, 10000);
 	}

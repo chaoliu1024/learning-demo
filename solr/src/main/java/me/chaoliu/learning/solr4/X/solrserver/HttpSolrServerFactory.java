@@ -2,7 +2,7 @@
  * Copyright (c) 2015, Person Chao Liu. All rights reserved.
  */
 
-package me.chaoliu.learning.solr.solrserver;
+package me.chaoliu.learning.solr4.X.solrserver;
 
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
@@ -19,7 +19,8 @@ public class HttpSolrServerFactory {
 	// private static final String URL = "http://127.0.0.1:8983/solr";
 	private static final String URL = "http://127.0.0.1:8080/solr-4.10.0-web";
 
-//	private static final String URL = "http://10.21.17.200:9580/solr-4.10.0-web/perfTest201503";
+	// private static final String URL =
+	// "http://10.21.17.200:9580/solr-4.10.0-web/perfTest201503";
 
 	private HttpSolrServerFactory() {
 	}
