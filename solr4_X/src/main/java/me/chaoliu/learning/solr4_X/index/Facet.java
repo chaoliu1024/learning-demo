@@ -35,36 +35,21 @@ public class Facet {
 	}
 
 	public static void main(String[] args) {
-
 		Facet facet = new Facet();
-		facet.facet();
+		facet.getfacetResult();
 	}
 
-	String param1 = "q=*+&collection=collection1&sort=recordTime+desc";
-	String param2 = "q=*+&facet.field=level&start=0&collection=collection1&sort=recordTime+desc&rows=10&facet=true";
-	String param3 = "q=*+&facet.field=recordTime&start=0&collection=collection1&sort=recordTime+desc&rows=10&facet=true";
-	String param5 = "q=*+&facet.date=recordTime&facet.date.gap=%2B1DAY&start=0&collection=collection1&sort=recordTime+desc&facet.date.end=NOW-0DAY&rows=10&facet=true&facet.date.start=NOW-371DAY%2FDAY";
-	String param6 = "q=*+&facet.field=keywords&start=0&collection=collection1&sort=recordTime+desc&rows=10&facet=true";
-	String param7 = "q=*+&facet.field=collectPro&start=0&collection=collection1&sort=recordTime+desc&rows=10&facet=true";
+	public void getfacetResult() {
 
-	public void facet() {
-
-		int numCount = 0;
-		while (numCount < 100000) {
+		int loopCount = 0;
+		while (loopCount < 100000) {
 			SolrQuery params = new SolrQuery("*:*");
-			params.setFacet(true);
-			if (numCount % 11 == 0) {
-				params.set("facet.field", "popularity");
-			} else if (numCount % 13 == 0) {
-				params.set("facet.field", "keywords");
-			} else if (numCount % 14 == 0) {
-				params.set("facet.field", "url");
-			} else if (numCount % 15 == 0) {
-				params.set("facet.field", "description");
-			}
 
+			params.setFacet(true);
+			params.set("facet.field", "popularity");
 			params.set("collection", "collection1");
 			params.setSort("last_modified", SolrQuery.ORDER.desc);
+
 			try {
 				QueryResponse response = server.query(params);
 				List<FacetField> facetFields = response.getFacetFields();
@@ -73,11 +58,8 @@ public class Facet {
 					List<Count> values = facetField.getValues();
 					for (int j = 0; j < values.size(); j++) {
 						Count count = values.get(j);
-						System.out.println(count.getName() + " : "
-								+ count.getCount());
+						logger.info(count.getName() + " : " + count.getCount());
 					}
-					// System.out.println(facetField.getName() + " : "
-					// + facetField.getValueCount());
 				}
 				SolrDocumentList results = response.getResults();
 				for (int i = 0; i < results.size(); i++) {
@@ -87,12 +69,11 @@ public class Facet {
 						String key = iterator.next();
 						logger.info(key + ":" + doc.getFieldValue(key));
 					}
-					System.out.println();
 				}
 			} catch (SolrServerException e) {
 				e.printStackTrace();
 			}
 		}
-		numCount++;
+		loopCount++;
 	}
 }
