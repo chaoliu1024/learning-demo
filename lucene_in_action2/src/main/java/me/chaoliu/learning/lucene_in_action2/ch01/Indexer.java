@@ -12,14 +12,17 @@ import java.io.IOException;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * ch01 demo Index
+ * ch01 demo -- Indexer
  * 
  * @author Chao Liu
  * @since Lucene In Action Demo 1.0
@@ -27,6 +30,7 @@ import org.apache.lucene.util.Version;
 public class Indexer {
 
 	private IndexWriter writer;
+	private static Logger logger = LoggerFactory.getLogger(Indexer.class);
 
 	public static void main(String[] args) throws IOException {
 		if (args.length != 2) {
@@ -49,8 +53,8 @@ public class Indexer {
 
 		long end = System.currentTimeMillis();
 
-		System.out.println("Indexing " + numIndexed + " files took "
-				+ (end - start) + " milliseconds");
+		logger.info("Indexing " + numIndexed + " files took " + (end - start)
+				+ " milliseconds");
 	}
 
 	public Indexer(String indexDir) throws IOException {
