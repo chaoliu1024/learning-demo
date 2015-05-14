@@ -12,6 +12,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import kafka.consumer.ConsumerConfig;
 import kafka.consumer.KafkaStream;
 import kafka.javaapi.consumer.ConsumerConnector;
@@ -24,6 +27,8 @@ import kafka.javaapi.consumer.ConsumerConnector;
  */
 public class ConsumerGroupExample {
 
+	private static Logger log = LoggerFactory
+			.getLogger(ConsumerGroupExample.class);
 	private final ConsumerConnector consumer;
 	private final String topic;
 	private ExecutorService executor;
@@ -41,9 +46,9 @@ public class ConsumerGroupExample {
 		Properties props = new Properties();
 		props.put("zookeeper.connect", a_zookeeper);
 		props.put("group.id", a_groupId);
-		props.put("zookeeper.session.timeout.ms", "400");
-		props.put("zookeeper.sync.time.ms", "200");
-		props.put("auto.commit.interval.ms", "1000");
+		props.put("zookeeper.session.timeout.ms", "4000");
+		props.put("zookeeper.sync.time.ms", "2000");
+		props.put("auto.commit.interval.ms", "1000000");
 
 		return new ConsumerConfig(props);
 	}
@@ -85,20 +90,28 @@ public class ConsumerGroupExample {
 	}
 
 	public static void main(String[] args) {
-		String zooKeeper = args[0];
-		String groupId = args[1];
-		String topic = args[2];
-		int threads = Integer.parseInt(args[3]);
+		// 10.21.17.200:3183,10.21.17.201:3183 lc-group test1 4
+		String zooKeeper = "10.21.17.200:3183,10.21.17.201:3183";
+		String groupId = "lc-group";
+		String topic = "test2";
+		int threads = 1;
+		// String zooKeeper = args[0];
+		// String groupId = args[1];
+		// String topic = args[2];
+		// int threads = Integer.parseInt(args[3]);
 
+		long start = System.currentTimeMillis();
 		ConsumerGroupExample example = new ConsumerGroupExample(zooKeeper,
 				groupId, topic);
 		example.run(threads);
 
 		try {
-			Thread.sleep(10000);
+			Thread.sleep(500000);
 		} catch (InterruptedException ie) {
 
 		}
 		example.shutdown();
+		long end = System.currentTimeMillis();
+		log.info((end - start) + " ms");
 	}
 }

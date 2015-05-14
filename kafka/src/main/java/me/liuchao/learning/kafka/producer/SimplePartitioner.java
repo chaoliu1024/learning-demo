@@ -11,7 +11,7 @@ import kafka.utils.VerifiableProperties;
  * TODO
  * 
  * @author Chao Liu
- * @since ??1.0
+ * @since Kafka Demo 1.0
  */
 public class SimplePartitioner implements Partitioner {
 

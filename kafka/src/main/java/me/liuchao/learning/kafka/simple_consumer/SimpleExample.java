@@ -4,13 +4,15 @@
 
 package me.liuchao.learning.kafka.simple_consumer;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import kafka.api.FetchRequest;
 import kafka.api.FetchRequestBuilder;
@@ -23,10 +25,21 @@ import kafka.javaapi.PartitionMetadata;
 import kafka.javaapi.TopicMetadata;
 import kafka.javaapi.TopicMetadataRequest;
 import kafka.javaapi.consumer.SimpleConsumer;
+import kafka.log.Log;
 import kafka.message.MessageAndOffset;
 
 /**
  * SimpleConsumer Example
+ * 
+ * The SimpleConsumer does require a significant amount of work not needed in
+ * the Consumer Groups: <br/>
+ * <ol>
+ * <li>You must keep track of the offsets in your application to know where you
+ * left off consuming.</li>
+ * <li>You must figure out which Broker is the lead Broker for a topic and
+ * partition.</li>
+ * <li>You must handle Broker leader changes.</li>
+ * </ol>
  * 
  * @author Chao Liu
  * @since Kafka Demo 1.0
@@ -35,21 +48,47 @@ public class SimpleExample {
 
 	private List<String> m_replicaBrokers = new ArrayList<String>();
 
+	private static Logger log = LoggerFactory.getLogger(SimpleExample.class);
+
 	public SimpleExample() {
 		m_replicaBrokers = new ArrayList<String>();
 	}
 
+	/**
+	 * The example expects the following parameters:
+	 * <ol>
+	 * <li>Maximum number of messages to read (so we don’t loop forever)</li>
+	 * <li>Topic to read from</li>
+	 * <li>Partition to read from</li>
+	 * <li>One broker to use for Metadata lookup</li>
+	 * <li>Port the brokers listen on</li>
+	 * </ol>
+	 * 
+	 * @param args
+	 */
 	public static void main(String args[]) {
 
 		SimpleExample example = new SimpleExample();
-		long maxReads = Long.parseLong(args[0]);
-		String topic = args[1];
-		int partition = Integer.parseInt(args[2]);
+
+		// 3 lc 35116 10.21.17.200 9038
+		// long maxReads = Long.parseLong(args[0]);
+		// String topic = args[1];
+		// int partition = Integer.parseInt(args[2]);
+		// seeds.add(args[3]);
+		// int port = Integer.parseInt(args[4]);
+		long maxReads = Long.parseLong("1000");
+		String topic = "lc";
+		int partition = 0;
 		List<String> seeds = new ArrayList<String>();
-		seeds.add(args[3]);
-		int port = Integer.parseInt(args[4]);
+		seeds.add("10.21.17.200");
+		seeds.add("10.21.17.201");
+		seeds.add("10.21.17.202");
+		int port = 9038;
 		try {
+			long start = System.currentTimeMillis();
 			example.run(maxReads, topic, partition, seeds, port);
+			long end = System.currentTimeMillis();
+			log.info("running time: " + (end - start) + "ms");
 		} catch (Exception e) {
 			System.out.println("Oops:" + e);
 			e.printStackTrace();
@@ -86,6 +125,10 @@ public class SimpleExample {
 				consumer = new SimpleConsumer(leadBroker, a_port, 100000,
 						64 * 1024, clientName);
 			}
+			// When calling FetchRequestBuilder, it's important NOT to call
+			// .replicaId(), which is meant for internal use only. Setting the
+			// replicaId incorrectly will cause the brokers to behave
+			// incorrectly.
 			FetchRequest req = new FetchRequestBuilder().clientId(clientName)
 					.addFetch(a_topic, a_partition, readOffset, 100000)
 					// Note: this fetchSize of 100000 might need to be increased
@@ -178,6 +221,15 @@ public class SimpleExample {
 				"Unable to find new leader after Broker failure. Exiting");
 	}
 
+	/**
+	 * Finding the Lead Broker for a Topic and Partition.
+	 * 
+	 * @param a_seedBrokers
+	 * @param a_port
+	 * @param a_topic
+	 * @param a_partition
+	 * @return
+	 */
 	private PartitionMetadata findLeader(List<String> a_seedBrokers,
 			int a_port, String a_topic, int a_partition) {
 
@@ -218,6 +270,16 @@ public class SimpleExample {
 		return returnMetaData;
 	}
 
+	/**
+	 * Finding Starting Offset for Reads.
+	 * 
+	 * @param consumer
+	 * @param topic
+	 * @param partition
+	 * @param whichTime
+	 * @param clientName
+	 * @return
+	 */
 	public static long getLastOffset(SimpleConsumer consumer, String topic,
 			int partition, long whichTime, String clientName) {
 
@@ -230,6 +292,7 @@ public class SimpleExample {
 				requestInfo, kafka.api.OffsetRequest.CurrentVersion(),
 				clientName);
 		OffsetResponse response = consumer.getOffsetsBefore(request);
+
 		if (response.hasError()) {
 			System.out
 					.println("Error fetching data Offset Data the Broker. Reason: "
