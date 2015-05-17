@@ -81,6 +81,9 @@ public class Index {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+			System.runFinalization();
+			System.gc();
 		}
 	}
 
