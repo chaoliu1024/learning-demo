@@ -31,7 +31,7 @@ public class Facet {
 	private static final Logger logger = Logger.getLogger(Facet.class);
 
 	public Facet() {
-		this.server = HttpSolrServerFactory.getInstanceSolrServer();
+		this.server = HttpSolrServerFactory.getSolrServerInstance();
 	}
 
 	public static void main(String[] args) {

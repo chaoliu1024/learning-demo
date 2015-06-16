@@ -34,8 +34,9 @@ public class Index {
 
 	private Collection<SolrInputDocument> docs = new ArrayList<SolrInputDocument>();
 	
-	private SolrClient solrClient = HttpSolrClientFactory.getInstanceSolrClient();
-	
+	private SolrClient solrClient = HttpSolrClientFactory
+			.getInstanceSolrClient();
+
 	private static Logger log = LoggerFactory.getLogger(Index.class);
 
 	public void addDocs(int totalDocNum, int batchNum) {

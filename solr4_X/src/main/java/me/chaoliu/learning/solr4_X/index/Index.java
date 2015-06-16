@@ -15,8 +15,8 @@ import java.util.UUID;
 import me.chaoliu.learning.solr4_X.solrserver.HttpSolrServerFactory;
 
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -33,27 +33,39 @@ import org.slf4j.LoggerFactory;
 public class Index {
 
 	private Collection<SolrInputDocument> docs = new ArrayList<SolrInputDocument>();
-	private SolrServer solrServer = HttpSolrServerFactory
-			.getInstanceSolrServer();
+
+	private HttpSolrServer solrServer;
 
 	private static Logger log = LoggerFactory.getLogger(Index.class);
 
+	public Index() {
+
+		// instantiate solrServer
+		// solrServer =
+		// CloudSolrServerFactory.getSolrServerInstance("ee201505");
+		// solrServer = ConcurrentUpdateSolrServerFactory.getSolrServerInstance(
+		// 50000, 4);
+		solrServer = HttpSolrServerFactory.getSolrServerInstance();
+	}
+
 	public void addDocs(int totalDocNum, int batchNum) {
-		long startTime = System.currentTimeMillis();
-		for (int i = 1; i <= batchNum; ++i) {
+		double startTime = System.currentTimeMillis();
+		for (int i = 1; i <= totalDocNum; ++i) {
 
 			addDoc(i);
 			if (i % batchNum == 0) {
-				long start = System.currentTimeMillis();
+				double start = System.currentTimeMillis();
 				commit();
-				long end = System.currentTimeMillis();
-				log.info(i + ": " + (end - start) + "ms\t" + new Date());
+				double end = System.currentTimeMillis();
+				log.info(i + ": " + batchNum / ((end - start) / 1000)
+						+ "doc/s\t" + new Date());
 			}
 		}
 		commit();
-		long endTime = System.currentTimeMillis();
+		double endTime = System.currentTimeMillis();
 		log.info("rate is " + totalDocNum / ((endTime - startTime) / 1000)
 				+ " doc/s");
+		shutdown();
 	}
 
 	public void addDoc(int i) {
@@ -64,9 +76,8 @@ public class Index {
 		doc.addField("id", UUID.randomUUID());
 		doc.addField("popularity", Math.abs(random.nextInt()) % 100 + 8000);
 		doc.addField("last_modified", new java.util.Date());
-		// doc.addField("keywords", "2solr4.10");
 		doc.addField("name", "10." + i % 23 + ".47." + i % 100);
-		// doc.addField("_route_", "shard1");
+		// doc.addField("_route_", "shard3");
 		docs.add(doc);
 	}
 
@@ -96,6 +107,7 @@ public class Index {
 		try {
 			QueryResponse response = solrServer.query(params);
 			list = response.getResults();
+			System.out.println("size: " + list.size());
 			for (int i = 0; i < list.size(); i++) {
 				SolrDocument doc = list.get(i);
 				Iterator<String> iterator = doc.keySet().iterator();
@@ -119,11 +131,15 @@ public class Index {
 		}
 	}
 
+	private void shutdown() {
+		solrServer.shutdown();
+	}
+
 	public static void main(String[] args) {
 
 		Index index = new Index();
 		index.query("*", "*");
 		// index.deleteAll();
-		// index.addDocs(10000, 10000);
+		// index.addDocs(19032, 100000);
 	}
 }
