@@ -4,7 +4,6 @@
 
 package me.chaoliu.learning.solr4_X.solrserver;
 
-import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
 
 /**
@@ -16,18 +15,15 @@ import org.apache.solr.client.solrj.impl.HttpSolrServer;
 public class HttpSolrServerFactory {
 
 	private static HttpSolrServer solrServer = null;
-	private static final String URL = "http://127.0.0.1:8080/solr-4.10.0-web";
-
 	// private static final String URL =
-	// "http://127.0.0.1:8080/solr-5.0.0-web/collection1";
+	// "http://10.21.17.200:9580/solr-4.10.0-web/testimplicit";
 
-	// private static final String URL =
-	// "http://10.21.17.200:9580/solr-4.10.0-web/perfTest201503";
+	private static final String URL = "http://10.21.17.200:9580/solr-4.10.0-web/collection1";
 
 	private HttpSolrServerFactory() {
 	}
 
-	public static SolrServer getInstanceSolrServer() {
+	public static HttpSolrServer getSolrServerInstance() {
 		if (solrServer == null) {
 			synchronized (HttpSolrServerFactory.class) {
 				if (solrServer == null) {

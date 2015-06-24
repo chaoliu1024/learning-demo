@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 public class CursorMark {
 
 	private SolrServer solrServer = HttpSolrServerFactory
-			.getInstanceSolrServer();
+			.getSolrServerInstance();
 	private static Logger log = LoggerFactory.getLogger(CursorMark.class);
 
 	public void cursorMark() throws SolrServerException, IOException {
